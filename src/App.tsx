@@ -1,25 +1,54 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import AOS from "aos";
+import "aos/dist/aos.css";
+import { useEffect } from "react";
+import BackToTop from "./components/BackToTop/BackToTop";
+import ScrollIndicator from "./components/ScrollIndicator/ScrollIndicator";
+import AppContextProvider, { useAppContext } from "./contexts/useAppContext";
+import ScrollToComponentProvider from "./contexts/useScrollToComponentContext";
+import { modal } from "./helpers/htmlInputElementsVariables";
+import MainPage from "./pages/MainPage";
+import { NavbarAndButtonFn } from "./utils/navbarAndButton";
+import { scrollBarIndicatorFn } from "./utils/scrollIndicator";
 
 function App() {
+  const { modalState } = useAppContext();
+  // const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    window.onscroll = function () {
+      scrollBarIndicatorFn();
+      NavbarAndButtonFn();
+    };
+  });
+
+  // useEffect(() => {
+  //   setInterval(() => setLoading(false), 5000);
+  // }, []);
+
+  useEffect(() => {
+    if (modalState === false) {
+      setInterval(() => {
+        if (modal !== null) {
+          modal.style.display = "block";
+        }
+      }, 3000);
+    }
+  }, [modalState]);
+
+  useEffect(() => {
+    AOS.init({ duration: 1500 });
+  }, []);
+
+  // if (loading) return <AppLoader />;
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AppContextProvider>
+      <ScrollToComponentProvider>
+        <ScrollIndicator />
+        <MainPage />
+        <BackToTop />
+      </ScrollToComponentProvider>
+    </AppContextProvider>
   );
 }
 
